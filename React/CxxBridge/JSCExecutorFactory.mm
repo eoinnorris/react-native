@@ -13,6 +13,8 @@
 namespace facebook {
 namespace react {
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
   std::shared_ptr<ExecutorDelegate> delegate,
   std::shared_ptr<MessageQueueThread> jsQueue) {
@@ -30,3 +32,4 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
 
 } // namespace react
 } // namespace facebook
+#pragma clang diagnostic pop

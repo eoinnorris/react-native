@@ -103,7 +103,10 @@ public:
    */
   virtual std::string getDescription() = 0;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
   virtual void handleMemoryPressure(int pressureLevel) {}
+#pragma clang diagnostic pop
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}

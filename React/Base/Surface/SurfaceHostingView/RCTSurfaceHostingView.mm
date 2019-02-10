@@ -226,6 +226,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 
 #pragma mark - RCTSurfaceDelegate
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (void)surface:(RCTSurface *)surface didChangeStage:(RCTSurfaceStage)stage
 {
   RCTExecuteOnMainQueue(^{
@@ -239,5 +241,6 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     [self _invalidateLayout];
   });
 }
+#pragma clang diagnostic pop
 
 @end

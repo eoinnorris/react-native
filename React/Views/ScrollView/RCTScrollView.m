@@ -1015,7 +1015,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 }
 
 #pragma mark - RCTUIManagerObserver
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (void)uiManagerWillPerformMounting:(RCTUIManager *)manager
 {
   RCTAssertUIManagerQueue();
@@ -1074,6 +1075,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     }
   }];
 }
+#pragma clang diagnostic pop
+
 
 // Note: setting several properties of UIScrollView has the effect of
 // resetting its contentOffset to {0, 0}. To prevent this, we generate

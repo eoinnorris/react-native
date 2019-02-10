@@ -33,10 +33,13 @@
  * Removing support for setting padding from any outside code
  * to prevent interferring this with local data.
  */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (void)setPadding:(YGValue)value {}
 - (void)setPaddingLeft:(YGValue)value {}
 - (void)setPaddingRight:(YGValue)value {}
 - (void)setPaddingTop:(YGValue)value {}
 - (void)setPaddingBottom:(YGValue)value {}
+#pragma clang diagnostic pop
 
 @end

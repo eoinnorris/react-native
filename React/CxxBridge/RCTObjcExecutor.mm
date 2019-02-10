@@ -97,6 +97,8 @@ public:
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
   void registerBundle(uint32_t bundleId, const std::string &bundlePath) override {
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }

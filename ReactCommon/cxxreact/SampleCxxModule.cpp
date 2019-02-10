@@ -145,7 +145,10 @@ void SampleCxxModule::save(folly::dynamic args) {
   sample_->save(std::move(m));
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 void SampleCxxModule::load(folly::dynamic args, Callback cb) {
+#pragma clang diagnostic pop
   dynamic d = dynamic::object;
   for (const auto& p : sample_->load()) {
     d.insert(p.first, p.second);

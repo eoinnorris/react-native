@@ -182,8 +182,12 @@
 
 #pragma mark - Bridge Events
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (void)handleBridgeWillLoadJavaScriptNotification:(NSNotification *)notification
 {
+#pragma clang diagnostic pop
+
   RCTAssertMainQueue();
 
   // Reset states because the bridge is reloading. This is similar to initialization phase.
@@ -505,10 +509,13 @@
 
 #pragma mark - RCTSurfaceRootShadowViewDelegate
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (void)rootShadowView:(RCTRootShadowView *)rootShadowView didChangeIntrinsicSize:(CGSize)intrinsicSize
 {
   self.intrinsicSize = intrinsicSize;
 }
+
 
 - (void)rootShadowViewDidStartRendering:(RCTSurfaceRootShadowView *)rootShadowView
 {
@@ -559,6 +566,7 @@
     });
   }
 }
+#pragma clang diagnostic pop
 
 - (BOOL)start
 {

@@ -39,8 +39,11 @@ struct DummySystraceSection {
 public:
   template<typename... ConvertsToStringPiece>
   explicit
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
   DummySystraceSection(const char* name, ConvertsToStringPiece&&... args)
     {}
+#pragma clang diagnostic pop
 };
 using SystraceSection = DummySystraceSection;
 #endif

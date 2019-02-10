@@ -28,9 +28,13 @@ public:
       dispatch_async(queue, block);
     }
   }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
   void runOnQueueSync(std::function<void()>&& func) override {
     LOG(FATAL) << "Unsupported operation";
   }
+#pragma clang diagnostic pop
+
   void quitSynchronous() override {
     LOG(FATAL) << "Unsupported operation";
   }

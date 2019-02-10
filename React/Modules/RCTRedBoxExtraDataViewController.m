@@ -181,6 +181,8 @@
     [_tableView reloadData];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [[_extraData objectAtIndex:section] count];
@@ -215,6 +217,12 @@
 
     return view;
 }
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+  return _extraDataTitle.count;
+}
+
+#pragma clang diagnostic pop
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -235,11 +243,6 @@
     cell.valueLabel.text = dataKVPair[1];
 
     return cell;
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return _extraDataTitle.count;
 }
 
 - (void)addExtraData:(NSDictionary *)data forIdentifier:(NSString *)identifier

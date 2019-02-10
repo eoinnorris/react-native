@@ -194,6 +194,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self sendToPackager:jsonMessage];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 // analogous to InspectorPackagerConnection.Connection.onFailure(...)
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
@@ -238,6 +240,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self reconnect];
   }
 }
+#pragma clang diagnostic pop
 
 - (void)connect
 {

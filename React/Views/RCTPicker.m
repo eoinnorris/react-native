@@ -69,9 +69,12 @@ numberOfRowsInComponent:(__unused NSInteger)component
   return [RCTConvert NSString:_items[row][@"label"]];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
   return _font.pointSize + 19;
 }
+#pragma clang diagnostic pop
 
 - (UIView *)pickerView:(UIPickerView *)pickerView
             viewForRow:(NSInteger)row

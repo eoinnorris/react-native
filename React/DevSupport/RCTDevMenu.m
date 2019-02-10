@@ -217,9 +217,12 @@ RCT_EXPORT_MODULE()
         preferredStyle:UIAlertControllerStyleAlert];
       __weak typeof(alertController) weakAlertController = alertController;
       [alertController addAction:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
        [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
         [weakAlertController dismissViewControllerAnimated:YES completion:nil];
       }]];
+#pragma clang diagnostic pop
       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
     }]];
   } else {
@@ -251,9 +254,12 @@ RCT_EXPORT_MODULE()
           preferredStyle:UIAlertControllerStyleAlert];
         __weak typeof(alertController) weakAlertController = alertController;
         [alertController addAction:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
          [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
           [weakAlertController dismissViewControllerAnimated:YES completion:nil];
         }]];
+#pragma clang diagnostic pop
         [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
       } else {
         devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;

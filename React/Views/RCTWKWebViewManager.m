@@ -61,6 +61,9 @@ RCT_EXPORT_METHOD(postMessage:(nonnull NSNumber *)reactTag message:(NSString *)m
   }];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+
 RCT_CUSTOM_VIEW_PROPERTY(bounces, BOOL, RCTWKWebView) {
   view.bounces = json == nil ? true : [RCTConvert BOOL: json];
 }
@@ -72,6 +75,7 @@ RCT_CUSTOM_VIEW_PROPERTY(scrollEnabled, BOOL, RCTWKWebView) {
 RCT_CUSTOM_VIEW_PROPERTY(decelerationRate, CGFloat, RCTWKWebView) {
   view.decelerationRate = json == nil ? UIScrollViewDecelerationRateNormal : [RCTConvert CGFloat: json];
 }
+#pragma clang diagnostic pop
 
 RCT_EXPORT_METHOD(injectJavaScript:(nonnull NSNumber *)reactTag script:(NSString *)script)
 {
@@ -135,10 +139,14 @@ RCT_EXPORT_METHOD(stopLoading:(nonnull NSNumber *)reactTag)
 
 #pragma mark - Exported synchronous methods
 
-- (BOOL)          webView:(RCTWKWebView *)webView
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+- (BOOL)webView:(RCTWKWebView *)webView
 shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
              withCallback:(RCTDirectEventBlock)callback
 {
+#pragma clang diagnostic pop
+
   _shouldStartLoadLock = [[NSConditionLock alloc] initWithCondition:arc4random()];
   _shouldStartLoad = YES;
   request[@"lockIdentifier"] = @(_shouldStartLoadLock.condition);

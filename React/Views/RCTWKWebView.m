@@ -119,6 +119,8 @@ static NSURLCredential* clientAuthenticationCredential;
  * This method is called whenever JavaScript running within the web view calls:
  *   - window.webkit.messageHandlers.[MessageHanderName].postMessage
  */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (void)userContentController:(WKUserContentController *)userContentController
        didReceiveScriptMessage:(WKScriptMessage *)message
 {
@@ -228,11 +230,43 @@ static NSURLCredential* clientAuthenticationCredential;
 
 #pragma mark - WKNavigationDelegate methods
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+/**
+ * Called when an error occurs while the web view is loading content.
+ * @see https://fburl.com/km6vqenw
+ */
+- (void)               webView:(WKWebView *)webView
+  didFailProvisionalNavigation:(WKNavigation *)navigation
+                     withError:(NSError *)error
+{
+  if (_onLoadingError) {
+    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
+      // NSURLErrorCancelled is reported when a page has a redirect OR if you load
+      // a new URL in the WebView before the previous one came back. We can just
+      // ignore these since they aren't real errors.
+      // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
+      return;
+    }
+    
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary:@{
+                                      @"didFailProvisionalNavigation": @YES,
+                                      @"domain": error.domain,
+                                      @"code": @(error.code),
+                                      @"description": error.localizedDescription,
+                                      }];
+    _onLoadingError(event);
+  }
+  
+  [self setBackgroundColor: _savedBackgroundColor];
+}
+
 /**
  * Decides whether to allow or cancel a navigation.
  * @see https://fburl.com/42r9fxob
  */
-- (void)                  webView:(WKWebView *)webView
+- (void)webView:(WKWebView *)webView
   decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
                   decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
@@ -285,34 +319,54 @@ static NSURLCredential* clientAuthenticationCredential;
 }
 
 /**
- * Called when an error occurs while the web view is loading content.
- * @see https://fburl.com/km6vqenw
+ * Called when the navigation is complete.
+ * @see https://fburl.com/rtys6jlb
  */
-- (void)               webView:(WKWebView *)webView
-  didFailProvisionalNavigation:(WKNavigation *)navigation
-                     withError:(NSError *)error
+- (void)      webView:(WKWebView *)webView
+  didFinishNavigation:(WKNavigation *)navigation
 {
-  if (_onLoadingError) {
-    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
-      // NSURLErrorCancelled is reported when a page has a redirect OR if you load
-      // a new URL in the WebView before the previous one came back. We can just
-      // ignore these since they aren't real errors.
-      // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
-      return;
-    }
-
-    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-    [event addEntriesFromDictionary:@{
-      @"didFailProvisionalNavigation": @YES,
-      @"domain": error.domain,
-      @"code": @(error.code),
-      @"description": error.localizedDescription,
+  if (_messagingEnabled) {
+#if RCT_DEV
+    
+    // Implementation inspired by Lodash.isNative.
+    NSString *isPostMessageNative = @"String(String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage'))";
+    [self evaluateJS: isPostMessageNative thenCall: ^(NSString *result) {
+      if (! [result isEqualToString:@"true"]) {
+        RCTLogError(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+      }
     }];
-    _onLoadingError(event);
+#endif
+    
+    NSString *source = [NSString stringWithFormat:
+                        @"(function() {"
+                        "window.originalPostMessage = window.postMessage;"
+                        
+                        "window.postMessage = function(data) {"
+                        "window.webkit.messageHandlers.%@.postMessage(String(data));"
+                        "};"
+                        "})();",
+                        MessageHanderName
+                        ];
+    [self evaluateJS: source thenCall: nil];
   }
-
+  
+  if (_injectedJavaScript) {
+    [self evaluateJS: _injectedJavaScript thenCall: ^(NSString *jsEvaluationValue) {
+      NSMutableDictionary *event = [self baseEvent];
+      event[@"jsEvaluationValue"] = jsEvaluationValue;
+      if (self.onLoadingFinish) {
+        self.onLoadingFinish(event);
+      }
+    }];
+  } else if (_onLoadingFinish) {
+    _onLoadingFinish([self baseEvent]);
+  }
+  
   [self setBackgroundColor: _savedBackgroundColor];
 }
+
+#pragma clang diagnostic pop
+
 
 + (void)setClientAuthenticationCredential:(nullable NSURLCredential*)credential {
   clientAuthenticationCredential = credential;
@@ -343,53 +397,6 @@ static NSURLCredential* clientAuthenticationCredential;
   }];
 }
 
-
-/**
- * Called when the navigation is complete.
- * @see https://fburl.com/rtys6jlb
- */
-- (void)      webView:(WKWebView *)webView
-  didFinishNavigation:(WKNavigation *)navigation
-{
-  if (_messagingEnabled) {
-    #if RCT_DEV
-
-    // Implementation inspired by Lodash.isNative.
-    NSString *isPostMessageNative = @"String(String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage'))";
-    [self evaluateJS: isPostMessageNative thenCall: ^(NSString *result) {
-      if (! [result isEqualToString:@"true"]) {
-        RCTLogError(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
-      }
-    }];
-    #endif
-
-    NSString *source = [NSString stringWithFormat:
-      @"(function() {"
-        "window.originalPostMessage = window.postMessage;"
-
-        "window.postMessage = function(data) {"
-          "window.webkit.messageHandlers.%@.postMessage(String(data));"
-        "};"
-      "})();",
-      MessageHanderName
-    ];
-    [self evaluateJS: source thenCall: nil];
-  }
-
-  if (_injectedJavaScript) {
-    [self evaluateJS: _injectedJavaScript thenCall: ^(NSString *jsEvaluationValue) {
-      NSMutableDictionary *event = [self baseEvent];
-      event[@"jsEvaluationValue"] = jsEvaluationValue;
-      if (self.onLoadingFinish) {
-        self.onLoadingFinish(event);
-      }
-    }];
-  } else if (_onLoadingFinish) {
-    _onLoadingFinish([self baseEvent]);
-  }
-
-  [self setBackgroundColor: _savedBackgroundColor];
-}
 
 - (void)injectJavaScript:(NSString *)script
 {

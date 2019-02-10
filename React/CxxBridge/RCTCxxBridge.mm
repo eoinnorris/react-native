@@ -71,8 +71,12 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 
 namespace {
 
+  
+
 class GetDescAdapter : public JSExecutorFactory {
 public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
   GetDescAdapter(RCTCxxBridge *bridge, std::shared_ptr<JSExecutorFactory> factory)
     : bridge_(bridge)
     , factory_(factory) {}
@@ -85,6 +89,7 @@ public:
                 ret->getDescription().c_str()];
     return std::move(ret);
   }
+#pragma clang diagnostic pop
 
 private:
   RCTCxxBridge *bridge_;
@@ -99,6 +104,8 @@ static bool isRAMBundle(NSData *script) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
   ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
@@ -128,6 +135,8 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
     }
   };
 }
+#pragma clang diagnostic pop
+
 
 @interface RCTCxxBridge ()
 

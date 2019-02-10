@@ -24,11 +24,14 @@
   }
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (void)displayLayer:(CALayer *)layer
 {
   // RCTView uses displayLayer to do border rendering.
   // We don't need to do that in RCTMaskedView, so we
   // stub this method and override the default implementation.
 }
+#pragma clang diagnostic pop
 
 @end

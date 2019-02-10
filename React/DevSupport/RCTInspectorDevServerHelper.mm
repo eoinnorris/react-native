@@ -90,6 +90,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
   [request setHTTPMethod:@"GET"];
 
   __weak UIViewController *viewCapture = view;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
   [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:
     ^(NSData *_Nullable data,
       NSURLResponse *_Nullable response,
@@ -99,6 +101,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
         displayErrorAlert(viewCaptureStrong, @"The request to attach Nuclide couldn't reach Metro Bundler!");
       }
     }] resume];
+#pragma clang diagnostic pop
+
 }
 
 + (void)disableDebugger

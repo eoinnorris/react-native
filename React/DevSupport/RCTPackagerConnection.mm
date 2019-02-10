@@ -56,6 +56,8 @@ struct Registration {
   return connection;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -77,6 +79,7 @@ struct Registration {
   }
   return self;
 }
+#pragma clang diagnostic pop
 
 static RCTReconnectingWebSocket *socketForLocation(NSString *const jsLocation)
 {
@@ -197,7 +200,8 @@ static BOOL isSupportedVersion(NSNumber *version)
 }
 
 #pragma mark - RCTReconnectingWebSocketDelegate
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 - (void)reconnectingWebSocketDidOpen:(RCTReconnectingWebSocket *)webSocket
 {
   std::vector<Registration<RCTConnectedHandler>> registrations;
@@ -213,6 +217,14 @@ static BOOL isSupportedVersion(NSNumber *version)
     dispatch_async(registration.queue, ^{ handler(); });
   }
 }
+
+- (void)reconnectingWebSocketDidClose:(RCTReconnectingWebSocket *)webSocket
+{
+  std::lock_guard<std::mutex> l(_mutex);
+  _socketConnected = NO;
+}
+
+#pragma clang diagnostic pop
 
 - (void)reconnectingWebSocket:(RCTReconnectingWebSocket *)webSocket didReceiveMessage:(id)message
 {
@@ -259,11 +271,7 @@ static BOOL isSupportedVersion(NSNumber *version)
   }
 }
 
-- (void)reconnectingWebSocketDidClose:(RCTReconnectingWebSocket *)webSocket
-{
-  std::lock_guard<std::mutex> l(_mutex);
-  _socketConnected = NO;
-}
+
 
 template <typename Handler>
 static std::vector<Registration<Handler>> registrationsWithMethod(std::mutex &mutex, const std::vector<Registration<Handler>> &registrations, NSString *method)

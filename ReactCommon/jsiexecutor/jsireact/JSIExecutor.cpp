@@ -160,6 +160,8 @@ void JSIExecutor::loadApplicationScript(
   }
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 void JSIExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> r) {
   if (!bundleRegistry_) {
     runtime_->global().setProperty(
@@ -177,6 +179,7 @@ void JSIExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> r) {
   }
   bundleRegistry_ = std::move(r);
 }
+#pragma clang diagnostic pop
 
 void JSIExecutor::registerBundle(
     uint32_t bundleId,

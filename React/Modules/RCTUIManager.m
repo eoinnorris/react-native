@@ -1178,13 +1178,15 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [shadowView didUpdateReactSubviews];
     [tags addObject:shadowView.reactTag];
   }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
   [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (NSNumber *tag in tags) {
       UIView<RCTComponent> *view = viewRegistry[tag];
       [view didUpdateReactSubviews];
     }
   }];
+#pragma clang diagnostic pop
 }
 
 - (void)_dispatchPropsDidChangeEvents
@@ -1203,13 +1205,16 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [shadowView didSetProps:props];
     [tags setObject:props forKey:shadowView.reactTag];
   }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
   [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (NSNumber *tag in tags) {
       UIView<RCTComponent> *view = viewRegistry[tag];
       [view didSetProps:[tags objectForKey:tag]];
     }
   }];
+#pragma clang diagnostic pop
+
 }
 
 RCT_EXPORT_METHOD(measure:(nonnull NSNumber *)reactTag

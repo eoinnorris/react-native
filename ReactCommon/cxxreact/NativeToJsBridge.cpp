@@ -43,7 +43,10 @@ public:
   }
 
   void callNativeModules(
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
       JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
+#pragma clang diagnostic pop
 
     CHECK(m_registry || calls.empty()) <<
       "native module calls cannot be completed with no native modules";
@@ -66,12 +69,14 @@ public:
       m_callback->decrementPendingJSCalls();
     }
   }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
   MethodCallResult callSerializableNativeHook(
       JSExecutor& executor, unsigned int moduleId, unsigned int methodId,
       folly::dynamic&& args) override {
     return m_registry->callSerializableNativeHook(moduleId, methodId, std::move(args));
   }
+#pragma clang diagnostic pop
 
 private:
 
